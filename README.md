@@ -4,4 +4,4 @@ Code Climate engine for [Credo](https://github.com/rrrene/credo) a static code a
 
 ## Configure
 
-You can configure this check in `.credo.exs` file. More informations is available [here](https://github.com/rrrene/credo#configuration).
+You can configure this engine in `.credo.exs` file within your project. More informations is available [here](https://github.com/rrrene/credo#configuration).

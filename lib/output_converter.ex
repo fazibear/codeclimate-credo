@@ -41,7 +41,8 @@ defmodule CodeclimateCredo.OutputConverter do
 
   defp type(type) do
     case type do
-      "[R]" -> "Refactoring Oportunities"
+      "[R]" -> "Code Readability"
+      "[F]" -> "Refactoring Oportunities"
       "[W]" -> "Warrning"
       "[C]" -> "Consistency"
       "[D]" -> "Software Design"
@@ -50,9 +51,10 @@ defmodule CodeclimateCredo.OutputConverter do
 
   defp category(type) do
     case type do
+      "[R]" -> ["Style"]
+      "[F]" -> ["Style"]
       "[W]" -> ["Bug Risk"]
       "[C]" -> ["Style"]
-      "[R]" -> ["Duplication"]
       "[D]" -> ["Style"]
     end
   end
