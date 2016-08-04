@@ -1,4 +1,10 @@
-defmodule ConfigConverter do
+defmodule CodeclimateCredo.ConfigConverter do
+  @moduledoc """
+  Convert codeclimate config file to .credo.exs.
+
+  Credo only support this file inside project. So you can create it manualy.
+  Right now it's not working.
+  """
 
   @cc_config_file "/config.json"
   @credo_config_file ".credo.exs"

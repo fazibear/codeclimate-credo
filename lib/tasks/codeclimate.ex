@@ -3,6 +3,7 @@ defmodule Mix.Tasks.Codeclimate do
   Task to analyze files
   """
   use Mix.Task
+  alias CodeclimateCredo.OutputConverter
 
   @code_dir "/code"
 

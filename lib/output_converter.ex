@@ -1,4 +1,8 @@
-defmodule OutputConverter do
+defmodule CodeclimateCredo.OutputConverter do
+  @moduledoc """
+  Convert credo output to codeclimate json.
+  """
+
   def convert({out, _}) do
     out
     |> String.split("\n")
