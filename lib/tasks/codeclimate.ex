@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Codeclimate do
     end
   end
 
-  def run_dogma do
+  def run_credo do
     "mix"
     |> System.cmd(["credo", @code_dir, "-A", "--all", "--one-line"])
     |> OutputConverter.convert
