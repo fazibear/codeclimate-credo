@@ -8,8 +8,20 @@ defmodule Mix.Tasks.Codeclimate do
   @code_dir "/code"
 
   def run(_argv) do
+    try do
+      run_credo
+    rescue
+      error -> log_error(error)
+    end
+  end
+
+  def run_dogma do
     "mix"
     |> System.cmd(["credo", @code_dir, "-A", "--all", "--one-line"])
     |> OutputConverter.convert
+  end
+
+  defp log_error(error) do
+    IO.inspect(:stderr, error)
   end
 end
