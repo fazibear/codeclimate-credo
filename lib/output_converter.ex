@@ -12,27 +12,29 @@ defmodule CodeclimateCredo.OutputConverter do
          |> convert_line
        end)
     |> Enum.join("\0")
-    |> IO.puts
   end
 
   defp convert_line([type, _, file | error]) do
     case String.split(file, ":") do
-      [file_name, line, column] ->
-        %{
-          type: "Issue",
-          check_name: type(type),
-          description: description(error),
-          categories: category(type),
-          location: %{
-            path: path(file_name),
-            lines: lines(line, column)
-          }
-        } |> Poison.encode!
-        _ -> nil
+      [file_name, line, _column] -> json(type, file_name, line, error)
+      [file_name, line] -> json(type, file_name, line, error)
+      _ -> nil
     end
   end
-
   defp convert_line(_), do: nil
+
+  defp json(type, file_name, line, error) do
+    %{
+      type: "Issue",
+      check_name: type(type),
+      description: description(error),
+      categories: category(type),
+      location: %{
+        path: path(file_name),
+        lines: lines(line)
+      }
+    } |> Poison.encode!
+  end
 
   defp description(error) do
     error
@@ -64,7 +66,7 @@ defmodule CodeclimateCredo.OutputConverter do
     |> String.replace(~r/^\/code\//, "")
   end
 
-  defp lines(line, _column) do
+  defp lines(line) do
     {iline, _} = Integer.parse(line)
 
     %{

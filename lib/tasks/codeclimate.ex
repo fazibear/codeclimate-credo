@@ -19,6 +19,7 @@ defmodule Mix.Tasks.Codeclimate do
     "mix"
     |> System.cmd(["credo", @code_dir, "-A", "--all", "--one-line"])
     |> OutputConverter.convert
+    |> IO.puts
   end
 
   defp log_error(error) do
