@@ -1,4 +1,5 @@
 Dockerfile
 _build
 deps
+bin
 .codeclimate.yml

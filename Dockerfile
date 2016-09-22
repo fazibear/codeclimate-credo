@@ -9,11 +9,14 @@ WORKDIR /usr/src/app
 
 RUN chown -R app:app /usr/src/app
 USER app
-VOLUME /code
 
 RUN mix local.hex --force
 RUN mix deps.get
 RUN mix deps.compile
 RUN mix compile
+RUN mix escript.build
 
-CMD mix codeclimate
+VOLUME /code
+WORKDIR /code
+
+CMD /usr/src/app/bin/codeclimate_credo
