@@ -152,10 +152,8 @@ defmodule Codeclimate.CLI do
     dir
     |> Filename.remove_line_no_and_column
     |> Config.read_or_default(switches[:config_name])
-    |> IO.inspect
     |> set_defaults
     |> set_include_paths(json)
-    |> IO.inspect
   end
 
   defp load_json_config do
