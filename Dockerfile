@@ -1,5 +1,7 @@
 FROM msaraiva/elixir-dev
 
+MAINTAINER Michał Kalbarczyk "fazibear@gmail.com"
+
 RUN adduser -D -u 9000 app
 
 COPY . /usr/src/app
