@@ -11,7 +11,6 @@ defmodule Codeclimate.CLI do
   alias Credo.Config
   alias Credo.Sources
   alias Credo.CLI.Filename
-  alias Credo.CLI.Output.UI
 
   @default_dir "."
   @default_command_name "codeclimate"
@@ -96,8 +95,6 @@ defmodule Codeclimate.CLI do
   defp run(argv) do
     {command_mod, dir, config} = parse_options(argv)
 
-    if config.check_for_updates, do: Credo.CheckForUpdates.run()
-
     config |> require_requires()
 
     command_mod.run(dir, config)
@@ -150,22 +147,15 @@ defmodule Codeclimate.CLI do
   end
 
   defp to_config(dir, switches) do
+    json = load_json_config
+
     dir
     |> Filename.remove_line_no_and_column
     |> Config.read_or_default(switches[:config_name])
-    |> set_from_json(load_json_config)
-    |> set_all(switches)
-    |> set_crash_on_error(switches)
-    |> set_deprecated_switches(switches)
-    |> set_format(switches)
-    |> set_help(switches)
-    |> set_ignore(switches)
-    |> set_min_priority(switches)
-    |> set_only(switches)
-    |> set_read_from_stdin(switches)
-    |> set_strict(switches)
-    |> set_verbose(switches)
-    |> set_version(switches)
+    |> IO.inspect
+    |> set_defaults
+    |> set_include_paths(json)
+    |> IO.inspect
   end
 
   defp load_json_config do
@@ -175,12 +165,6 @@ defmodule Codeclimate.CLI do
     end
   end
 
-  defp set_from_json(config, json) do
-    config
-    |> set_defaults
-    |> set_exclude_paths(json)
-  end
-
   defp set_defaults(config) do
     %Config{config |
       all: true,
@@ -188,84 +172,31 @@ defmodule Codeclimate.CLI do
     }
   end
 
-  defp set_exclude_paths(config, %{"exclude_paths" => paths}) when is_list(paths) do
-    %Config{config | files: %{ config.files | excluded: paths } }
-  end
-  defp set_exclude_paths(config, _), do: config
+  defp set_include_paths(
+    %Config{files: %{included: ["./**/*.{ex,exs}"]}} = config,
+    %{"include_paths" => paths}
+  ) when is_list(paths) do
+    paths = paths
+    |> List.delete("deps/")
+    |> Enum.map(fn (path) ->
+      if path |> String.ends_with?("/") do
+        "#{path}**/*.{ex,exs}"
+      else
+        if ~r/\.ex|\.exs$/ |> Regex.match?(path) do
+          path
+        end
+      end
+    end)
+    |> Enum.reject(&(!&1))
 
-  defp set_all(config, %{all: true}) do
-    %Config{config | all: true}
+    %Config{config | files: %{ config.files | included: paths } }
   end
-  defp set_all(config, _), do: config
+  defp set_include_paths(config, _), do: config
 
-  defp set_strict(config, %{all_priorities: true}) do
-    set_strict(config, %{strict: true})
-  end
-  defp set_strict(config, %{strict: true}) do
-    %Config{config | all: true, min_priority: -99}
-  end
-  defp set_strict(config, _), do: config
-
-  defp set_help(config, %{help: true}) do
-    %Config{config | help: true}
-  end
-  defp set_help(config, _), do: config
-
-  defp set_verbose(config, %{verbose: true}) do
-    %Config{config | verbose: true}
-  end
-  defp set_verbose(config, _), do: config
-
-  defp set_crash_on_error(config, %{crash_on_error: true}) do
-    %Config{config | crash_on_error: true}
-  end
-  defp set_crash_on_error(config, _), do: config
-
-  defp set_read_from_stdin(config, %{read_from_stdin: true}) do
-    %Config{config | read_from_stdin: true}
-  end
-  defp set_read_from_stdin(config, _), do: config
-
-  defp set_version(config, %{version: true}) do
-    %Config{config | version: true}
-  end
-  defp set_version(config, _), do: config
-
-  defp set_format(config, %{format: format}) do
-    %Config{config | format: format}
-  end
-  defp set_format(config, _), do: config
-
-  defp set_min_priority(config, %{min_priority: min_priority}) do
-    %Config{config | min_priority: min_priority}
-  end
-  defp set_min_priority(config, _), do: config
-
-  # exclude/ignore certain checks
-  defp set_only(config, %{only: only}) do
-    set_only(config, %{checks: only})
-  end
-  defp set_only(config, %{checks: check_pattern}) do
-    %Config{config | all: true, min_priority: -99,
-                      match_checks: check_pattern |> String.split(",")}
-  end
-  defp set_only(config, _), do: config
-
-  # exclude/ignore certain checks
-  defp set_ignore(config, %{ignore: ignore}) do
-    set_ignore(config, %{ignore_checks: ignore})
-  end
-  defp set_ignore(config, %{ignore_checks: ignore_pattern}) do
-    %Config{config | ignore_checks: ignore_pattern |> String.split(",")}
-  end
-  defp set_ignore(config, _), do: config
-
-  # DEPRECATED command line switches
-  defp set_deprecated_switches(config, %{one_line: true}) do
-    UI.puts [:yellow, "[DEPRECATED] ", :faint, "--one-line is deprecated in favor of --format=oneline"]
-    %Config{config | format: "oneline"}
-  end
-  defp set_deprecated_switches(config, _), do: config
+  # defp set_exclude_paths(config, %{"exclude_paths" => paths}) when is_list(paths) do
+  #   %Config{config | files: %{ config.files | excluded: paths } }
+  # end
+  # defp set_exclude_paths(config, _), do: config
 
   # Converts the return value of a Command.run() call into an exit_status
   defp to_exit_status(:ok), do: 0
