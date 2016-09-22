@@ -47,18 +47,13 @@ defmodule Codeclimate.Formatter do
       description: issue.message,
       categories: [@category_map[issue.category]],
       location: %{
-        path: path(issue.filename),
+        path: issue.filename,
         lines: %{
           begin: issue.line_no,
           end: issue.line_no
         }
       }
     } |> Poison.encode!
-  end
-
-  defp path(file_name) do
-    file_name
-    |> String.replace(~r/^\/code\//, "")
   end
 
   defp format_in_seconds(t) do
