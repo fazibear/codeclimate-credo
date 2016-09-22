@@ -13,7 +13,7 @@ defmodule Codeclimate.Formatter do
     design: "Style",
     readability: "Style",
     refactor: "Style",
-    warning: "Bug Rist",
+    warning: "Bug Risk",
     consistency: "Style",
   ]
 
