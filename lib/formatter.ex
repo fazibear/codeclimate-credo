@@ -4,8 +4,8 @@ defmodule Codeclimate.Formatter do
   @type_map [
     design: "Software Design",
     readability: "Code Readability",
-    refactor: "Refactoring Opportunities",
-    warning: "Warning",
+    refactor: "Refactoring opportunities",
+    warning: "Warnings - please take a look",
     consistency: "Consistency",
   ]
 

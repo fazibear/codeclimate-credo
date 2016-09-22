@@ -50,6 +50,8 @@ defmodule Codeclimate.CLI do
     v: :version
   ]
 
+  @config_file "/config.json"
+
   @doc false
   def main(argv) do
     try do
@@ -60,7 +62,9 @@ defmodule Codeclimate.CLI do
       |> to_exit_status()
       |> halt_if_failed()
     rescue
-      error -> IO.puts(:stderr, error)
+      error ->
+        IO.puts(:stderr, "Error:")
+        IO.inspect(:stderr, error, [])
     end
   end
 
@@ -149,7 +153,7 @@ defmodule Codeclimate.CLI do
     dir
     |> Filename.remove_line_no_and_column
     |> Config.read_or_default(switches[:config_name])
-    |> set_defaults
+    |> set_from_json(load_json_config)
     |> set_all(switches)
     |> set_crash_on_error(switches)
     |> set_deprecated_switches(switches)
@@ -164,12 +168,30 @@ defmodule Codeclimate.CLI do
     |> set_version(switches)
   end
 
+  defp load_json_config do
+    case File.read @config_file do
+      {:ok, config} -> config |> Poison.decode!
+      _ -> %{}
+    end
+  end
+
+  defp set_from_json(config, json) do
+    config
+    |> set_defaults
+    |> set_exclude_paths(json)
+  end
+
   defp set_defaults(config) do
     %Config{config |
-     all: true,
-     min_priority: -99
-   }
+      all: true,
+      min_priority: -99
+    }
   end
+
+  defp set_exclude_paths(config, %{"exclude_paths" => paths}) when is_list(paths) do
+    %Config{config | files: %{ config.files | excluded: paths } }
+  end
+  defp set_exclude_paths(config, _), do: config
 
   defp set_all(config, %{all: true}) do
     %Config{config | all: true}
