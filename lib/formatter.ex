@@ -46,6 +46,7 @@ defmodule Codeclimate.Formatter do
       check_name: @type_map[issue.category],
       description: issue.message,
       categories: [@category_map[issue.category]],
+      remediation_points: 100_000,
       location: %{
         path: issue.filename,
         lines: %{
