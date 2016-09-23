@@ -174,8 +174,20 @@ defmodule Codeclimate.CLI do
     %Config{files: %{included: ["./**/*.{ex,exs}"]}} = config,
     %{"include_paths" => paths}
   ) when is_list(paths) do
+    update_include_paths(config, paths)
+  end
+  defp set_include_paths(
+    %Config{files: %{included: ["lib/**/*.{ex,exs}", "src/", "web/", "apps/"]}} = config,
+    %{"include_paths" => paths}
+  ) when is_list(paths) do
+    update_include_paths(config, paths)
+  end
+  defp set_include_paths(config, _), do: config
+
+  defp update_include_paths(config, paths) do
     paths = paths
     |> List.delete("deps/")
+    |> List.delete("build/")
     |> Enum.map(fn (path) ->
       if path |> String.ends_with?("/") do
         "#{path}**/*.{ex,exs}"
@@ -189,12 +201,6 @@ defmodule Codeclimate.CLI do
 
     %Config{config | files: %{ config.files | included: paths } }
   end
-  defp set_include_paths(config, _), do: config
-
-  # defp set_exclude_paths(config, %{"exclude_paths" => paths}) when is_list(paths) do
-  #   %Config{config | files: %{ config.files | excluded: paths } }
-  # end
-  # defp set_exclude_paths(config, _), do: config
 
   # Converts the return value of a Command.run() call into an exit_status
   defp to_exit_status(:ok), do: 0
