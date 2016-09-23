@@ -165,6 +165,7 @@ defmodule Codeclimate.CLI do
 
   defp set_defaults(config) do
     %Config{config |
+      crash_on_error: false,
       all: true,
       min_priority: -99
     }

@@ -3,7 +3,7 @@ defmodule Codeclimate.Command do
 
   @shortdoc "Suggest code objects to look at next (default)"
 
-  alias Credo.Check.Runner
+  alias Codeclimate.Runner
   alias Credo.Config
   alias Credo.CLI.Output.UI
   alias Credo.CLI.Output
