@@ -6,7 +6,6 @@ defmodule Codeclimate.Command do
   alias Codeclimate.Runner
   alias Credo.Config
   alias Credo.CLI.Output.UI
-  alias Credo.CLI.Output
   alias Credo.Sources
   alias Codeclimate.Formatter
 
@@ -25,7 +24,7 @@ defmodule Codeclimate.Command do
   end
 
   def load_and_validate_source_files(config) do
-    {time_load, {valid_source_files, invalid_source_files}} =
+    {time_load, {valid_source_files, _invalid_source_files}} =
       :timer.tc fn ->
         config
         |> Sources.find

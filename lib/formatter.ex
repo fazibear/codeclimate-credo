@@ -50,8 +50,8 @@ defmodule Codeclimate.Formatter do
       location: %{
         path: issue.filename,
         lines: %{
-          begin: issue.line_no,
-          end: issue.line_no
+          begin: issue.line_no || 1,
+          end: issue.line_no || 1
         }
       }
     } |> Poison.encode!
