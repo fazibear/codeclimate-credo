@@ -32,9 +32,6 @@ defmodule Codeclimate.Command do
         |> Enum.partition(&(&1.valid?))
       end
 
-    invalid_source_files
-    |> Output.complain_about_invalid_source_files
-
     {time_load, valid_source_files}
   end
 
