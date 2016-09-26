@@ -178,7 +178,7 @@ defmodule Codeclimate.CLI do
     update_include_paths(config, paths)
   end
   defp set_include_paths(
-    %Config{files: %{included: ["lib/**/*.{ex,exs}", "src/", "web/", "apps/"]}} = config,
+    %Config{files: %{included: ["lib/" <> _, "src/" <> _, "web/" <> _, "apps/" <> _]}} = config,
     %{"include_paths" => paths}
   ) when is_list(paths) do
     update_include_paths(config, paths)
