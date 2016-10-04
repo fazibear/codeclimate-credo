@@ -29,10 +29,12 @@ defmodule Codeclimate.Formatter do
     %{
       type: "Issue",
       categories: Issue.categories(issue.check),
-      body: Issue.description(issue.check),
       check_name: Issue.check_name(issue.check),
       description: issue.message,
       remediation_points: 100_000,
+      content: %{
+        body: Issue.description(issue.check)
+      },
       location: %{
         path: issue.filename,
         lines: %{
