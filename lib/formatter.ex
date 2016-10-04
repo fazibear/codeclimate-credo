@@ -1,21 +1,6 @@
 defmodule Codeclimate.Formatter do
   alias Credo.CLI.Filter
-
-  @type_map [
-    design: "Software Design",
-    readability: "Code Readability",
-    refactor: "Refactoring opportunities",
-    warning: "Warnings - please take a look",
-    consistency: "Consistency",
-  ]
-
-  @category_map [
-    design: "Style",
-    readability: "Style",
-    refactor: "Style",
-    warning: "Bug Risk",
-    consistency: "Style",
-  ]
+  alias Codeclimate.Issue
 
   @doc "Called before the analysis is run."
   def print_before_info(source_files, _config) do
@@ -43,9 +28,10 @@ defmodule Codeclimate.Formatter do
   defp json(issue) do
     %{
       type: "Issue",
-      check_name: @type_map[issue.category],
+      categories: Issue.categories(issue.check),
+      body: Issue.description(issue.check),
+      check_name: Issue.check_name(issue.check),
       description: issue.message,
-      categories: [@category_map[issue.category]],
       remediation_points: 100_000,
       location: %{
         path: issue.filename,
