@@ -22,7 +22,7 @@ defmodule CodeclimateCredo.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.4.0"},
+      {:credo, "~> 0.5.0"},
       {:poison, "~> 2.2.0"}
     ]
   end

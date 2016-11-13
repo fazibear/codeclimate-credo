@@ -18,31 +18,11 @@ defmodule Codeclimate.Formatter do
     issues
     |> Filter.important(config)
     |> Filter.valid_issues(config)
-    |> Enum.map(&json/1)
+    |> Enum.map(&Issue.json/1)
     |> Enum.join("\0")
     |> print
 
     error("Finished! (#{format_in_seconds(time_load)}s to load, #{format_in_seconds(time_run)}s running checks)")
-  end
-
-  defp json(issue) do
-    %{
-      type: "Issue",
-      categories: Issue.categories(issue.check),
-      check_name: Issue.check_name(issue.check),
-      description: issue.message,
-      remediation_points: 100_000,
-      content: %{
-        body: Issue.description(issue.check)
-      },
-      location: %{
-        path: issue.filename,
-        lines: %{
-          begin: issue.line_no || 1,
-          end: issue.line_no || 1
-        }
-      }
-    } |> Poison.encode!
   end
 
   defp format_in_seconds(t) do
