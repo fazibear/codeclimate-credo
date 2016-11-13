@@ -881,7 +881,5 @@ defmodule Codeclimate.Issue do
     |> Module.split
     |> List.last
     |> Macro.underscore
-    |> String.replace("_", " ")
-    |> String.capitalize
   end
 end
