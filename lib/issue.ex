@@ -1,14 +1,14 @@
 defmodule Codeclimate.Issue do
-  @codeclimate_categories [
-    "Bug Risk",
-    "Clarity",
-    "Compatibility",
-    "Complexity",
-    "Duplication",
-    "Performance",
-    "Security",
-    "Style",
-  ]
+  # @codeclimate_categories [
+  #   "Bug Risk",
+  #   "Clarity",
+  #   "Compatibility",
+  #   "Complexity",
+  #   "Duplication",
+  #   "Performance",
+  #   "Security",
+  #   "Style",
+  # ]
 
   @issue_category %{
     Credo.Check.Design.DuplicatedCode => ["Duplication"],

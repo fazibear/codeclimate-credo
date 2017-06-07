@@ -4,12 +4,12 @@ defmodule Codeclimate.Command do
   @shortdoc "Suggest code objects to look at next (default)"
 
   alias Credo.Check.Runner
-  alias Credo.Config
+  alias Credo.Execution
   alias Credo.CLI.Output.UI
   alias Credo.Sources
   alias Codeclimate.Formatter
 
-  def run(_args, %Config{help: true}), do: print_help()
+  def run(_args, %Execution{help: true}), do: print_help()
   def run(_args, config) do
     {time_load, source_files} = load_and_validate_source_files(config)
 
@@ -40,7 +40,7 @@ defmodule Codeclimate.Command do
     end
   end
 
-  defp output_mod(%Config{format: _}) do
+  defp output_mod(%Execution{format: _}) do
     Formatter
   end
 

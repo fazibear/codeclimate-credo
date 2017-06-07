@@ -3,14 +3,15 @@ defmodule Codeclimate.CLI do
   Credo.CLI is the entrypoint for both the Mix task and the escript.
   It takes the parameters passed from the command line and translates them into
   a Command module (see the `Credo.CLI.Command` namespace), the work directory
-  where the Command should run and a `Credo.Config` object.
+  where the Command should run and a `Credo.Execution` object.
   """
 
   use Bitwise
 
-  alias Credo.Config
+  alias Credo.Execution
   alias Credo.Sources
   alias Credo.CLI.Filename
+  alias Credo.ConfigFile
 
   @default_dir "."
   @default_command_name "codeclimate"
@@ -18,7 +19,7 @@ defmodule Codeclimate.CLI do
     "categories" => Credo.CLI.Command.Categories,
     "explain" => Credo.CLI.Command.Explain,
     "gen.check" => Credo.CLI.Command.GenCheck,
-    "gen.config" => Credo.CLI.Command.GenConfig,
+    "gen.config" => Credo.CLI.Command.GenExecution,
     "help" => Credo.CLI.Command.Help,
     "list" => Credo.CLI.Command.List,
     "suggest" => Credo.CLI.Command.Suggest,
@@ -101,7 +102,7 @@ defmodule Codeclimate.CLI do
   end
 
   # Requires the additional files specified in the config.
-  defp require_requires(%Config{requires: requires}) do
+  defp require_requires(%Execution{requires: requires}) do
     requires
     |> Sources.find
     |> Enum.each(&Code.require_file/1)
@@ -126,10 +127,10 @@ defmodule Codeclimate.CLI do
     command_name_dir_config(command_name, args, config)
   end
 
-  defp command_name_dir_config(nil, args, %Config{help: true} = config) do
+  defp command_name_dir_config(nil, args, %Execution{help: true} = config) do
     command_name_dir_config("help", args, config)
   end
-  defp command_name_dir_config(nil, args, %Config{version: true} = config) do
+  defp command_name_dir_config(nil, args, %Execution{version: true} = config) do
     command_name_dir_config("version", args, config)
   end
   defp command_name_dir_config(nil, [], config) do
@@ -147,11 +148,11 @@ defmodule Codeclimate.CLI do
   end
 
   defp to_config(dir, switches) do
-    json = load_json_config
+    json = load_json_config()
 
     dir
-    |> Filename.remove_line_no_and_column
-    |> Config.read_or_default(switches[:config_name])
+    |> Filename.remove_line_no_and_column()
+    |> ConfigFile.read_or_default(switches[:config_name])
     |> set_defaults
     |> set_include_paths(json)
   end
@@ -164,7 +165,7 @@ defmodule Codeclimate.CLI do
   end
 
   defp set_defaults(config) do
-    %Config{config |
+    %Execution{config |
       crash_on_error: false,
       all: true,
       min_priority: -99
@@ -172,13 +173,13 @@ defmodule Codeclimate.CLI do
   end
 
   defp set_include_paths(
-    %Config{files: %{included: ["./**/*.{ex,exs}"]}} = config,
+    %Execution{files: %{included: ["./**/*.{ex,exs}"]}} = config,
     %{"include_paths" => paths}
   ) when is_list(paths) do
     update_include_paths(config, paths)
   end
   defp set_include_paths(
-    %Config{files: %{included: ["lib/" <> _, "src/" <> _, "web/" <> _, "apps/" <> _]}} = config,
+    %Execution{files: %{included: ["lib/" <> _, "src/" <> _, "web/" <> _, "apps/" <> _]}} = config,
     %{"include_paths" => paths}
   ) when is_list(paths) do
     update_include_paths(config, paths)
@@ -200,7 +201,7 @@ defmodule Codeclimate.CLI do
     end)
     |> Enum.reject(&(!&1))
 
-    %Config{config | files: %{ config.files | included: paths } }
+    %Execution{config | files: %{ config.files | included: paths } }
   end
 
   # Converts the return value of a Command.run() call into an exit_status
