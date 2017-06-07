@@ -8,7 +8,7 @@ defmodule CodeclimateCredo.Mixfile do
       elixir: "~> 1.3",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
-      deps: deps,
+      deps: deps(),
       escript: [
         main_module: Codeclimate.CLI,
         path: "bin/codeclimate_credo"
@@ -17,12 +17,14 @@ defmodule CodeclimateCredo.Mixfile do
   end
 
   def application do
-    [applications: []]
+    [
+      applications: []
+    ]
   end
 
   defp deps do
     [
-      {:credo, "~> 0.5.0"},
+      {:credo, "~> 0.8.0"},
       {:poison, "~> 2.2.0"}
     ]
   end
