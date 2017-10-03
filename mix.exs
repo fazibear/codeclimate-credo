@@ -1,11 +1,13 @@
 defmodule CodeclimateCredo.Mixfile do
   use Mix.Project
 
+  def version, do: "0.8.7"
+
   def project do
     [
       app: :codeclimate_credo,
-      version: "0.0.1",
-      elixir: "~> 1.3",
+      version: version(),
+      elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -24,7 +26,7 @@ defmodule CodeclimateCredo.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.8.0"},
+      {:credo, version()},
       {:poison, "~> 3.0"}
     ]
   end
