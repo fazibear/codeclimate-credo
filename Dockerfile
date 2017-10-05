@@ -1,4 +1,4 @@
-FROM msaraiva/elixir-dev
+FROM elixir:alpine
 
 MAINTAINER Michał Kalbarczyk "fazibear@gmail.com"
 

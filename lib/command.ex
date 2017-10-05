@@ -1,78 +1,81 @@
 defmodule Codeclimate.Command do
   use Credo.CLI.Command
 
-  @shortdoc "Suggest code objects to look at next (default)"
-
   alias Credo.Check.Runner
   alias Credo.Execution
-  alias Credo.CLI.Output.UI
+  alias Credo.CLI.Filter
+  alias Credo.CLI.Output
   alias Credo.Sources
   alias Codeclimate.Formatter
 
-  def run(_args, %Execution{help: true}), do: print_help()
-  def run(_args, config) do
-    {time_load, source_files} = load_and_validate_source_files(config)
-
-    out = output_mod(config)
-    out.print_before_info(source_files, config)
-
-    {time_run, {source_files, config}}  = run_checks(source_files, config)
-
-    print_results_and_summary(source_files, config, time_load, time_run)
-
-    :ok
+  @doc false
+  def run(%Execution{help: true}), do: nil
+  def run(exec) do
+    exec
+    |> load_and_validate_source_files()
+    |> Runner.prepare_config
+    |> print_before_info()
+    |> run_checks()
+    |> print_results_and_summary()
+    |> determine_success()
   end
 
-  def load_and_validate_source_files(config) do
-    {time_load, {valid_source_files, _invalid_source_files}} =
+  defp load_and_validate_source_files(exec) do
+    {time_load, {valid_source_files, invalid_source_files}} =
       :timer.tc fn ->
-        config
+        exec
         |> Sources.find
-        |> Enum.partition(&(&1.valid?))
+        |> Credo.Backports.Enum.split_with(&(&1.valid?))
       end
 
-    {time_load, valid_source_files}
+    Output.complain_about_invalid_source_files(invalid_source_files)
+
+    exec
+    |> Execution.put_source_files(valid_source_files)
+    |> Execution.put_assign("credo.time.source_files", time_load)
   end
 
-  def run_checks(source_files, config) do
-    :timer.tc fn ->
-      Runner.run(source_files, config)
-    end
+  defp print_before_info(exec) do
+    source_files = Execution.get_source_files(exec)
+
+    out = output_mod(exec)
+    out.print_before_info(source_files, exec)
+
+    exec
   end
 
-  defp output_mod(%Execution{format: _}) do
-    Formatter
+  defp run_checks(%Execution{} = exec) do
+    source_files = Execution.get_source_files(exec)
+
+    {time_run, :ok} =
+      :timer.tc fn ->
+        Runner.run(source_files, exec)
+      end
+
+    Execution.put_assign(exec, "credo.time.run_checks", time_run)
   end
 
-  defp print_results_and_summary(source_files, config, time_load, time_run) do
-    out = output_mod(config)
+  defp print_results_and_summary(%Execution{} = exec) do
+    source_files = Execution.get_source_files(exec)
 
-    source_files
-    |> out.print_after_info(config, time_load, time_run)
+    time_load = Execution.get_assign(exec, "credo.time.source_files")
+    time_run = Execution.get_assign(exec, "credo.time.run_checks")
+    out = output_mod(exec)
+
+    out.print_after_info(source_files, exec, time_load, time_run)
+
+    exec
   end
 
-  defp print_help do
-    ["Usage: ", :olive, "mix credo suggest [paths] [options]"]
-    |> UI.puts
-    """
-    Suggests objects from every category that Credo thinks can be improved.
-    """
-    |> UI.puts
-    ["Example: ", :olive, :faint, "$ mix credo suggest lib/**/*.ex --all -c names"]
-    |> UI.puts
-    """
-    Arrows (↑ ↗ → ↘ ↓) hint at the importance of an issue.
-    Suggest options:
-      -a, --all             Show all issues
-      -A, --all-priorities  Show all issues including low priority ones
-      -c, --checks          Only include checks that match the given strings
-      -C, --config-name     Use the given config instead of "default"
-      -i, --ignore-checks   Ignore checks that match the given strings
-          --format          Display the list in a specific format (oneline,flycheck)
-    General options:
-      -v, --version         Show version
-      -h, --help            Show this help
-    """
-    |> UI.puts
+  defp determine_success(exec) do
+    issues =
+      exec
+      |> Execution.get_issues
+      |> Filter.important(exec)
+      |> Filter.valid_issues(exec)
+
+    Execution.put_result(exec, "credo.issues", issues)
   end
+
+  defp output_mod(%Execution{format: _}), do: Formatter
 end

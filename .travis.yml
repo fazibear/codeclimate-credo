@@ -2,9 +2,9 @@ sudo: required
 group: edge
 language: elixir
 elixir:
-  - 1.3.2
+  - 1.5.2
 otp_release:
-  - 19.0
+  - 20.1
 services:
   - docker
 script:

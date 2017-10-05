@@ -1,28 +1,29 @@
 defmodule Codeclimate.Formatter do
   alias Credo.CLI.Filter
   alias Codeclimate.Issue
+  alias Credo.Execution
 
   @doc "Called before the analysis is run."
-  def print_before_info(source_files, _config) do
+  def print_before_info(source_files, _exec) do
     case Enum.count(source_files) do
-      0 -> error("No files found!")
-      1 -> error("Checking 1 source file ...")
-      count -> error("Checking #{count} source files...")
+      0 -> debug("No files found!")
+      1 -> debug("Checking 1 source file ...")
+      count -> debug("Checking #{count} source files...")
     end
   end
 
   @doc "Called after the analysis has run."
-  def print_after_info(source_files, config, time_load, time_run) do
-    issues = source_files |> Enum.flat_map(&(&1.issues))
+  def print_after_info(_source_files, exec, time_load, time_run) do
 
-    issues
-    |> Filter.important(config)
-    |> Filter.valid_issues(config)
+    exec
+    |> Execution.get_issues()
+    |> Filter.important(exec)
+    |> Filter.valid_issues(exec)
     |> Enum.map(&Issue.json/1)
     |> Enum.join("\0")
     |> print
 
-    error("Finished! (#{format_in_seconds(time_load)}s to load, #{format_in_seconds(time_run)}s running checks)")
+    debug("Finished! (#{format_in_seconds(time_load)}s to load, #{format_in_seconds(time_run)}s running checks)")
   end
 
   defp format_in_seconds(t) do
@@ -36,6 +37,6 @@ defmodule Codeclimate.Formatter do
     end
   end
 
-  defp error(str), do: IO.puts(:stderr, str)
   defp print(str), do: IO.puts(str)
+  defp debug(str), do: IO.puts(:stderr, str)
 end
