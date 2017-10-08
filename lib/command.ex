@@ -4,7 +4,6 @@ defmodule Codeclimate.Command do
   alias Credo.Check.Runner
   alias Credo.Execution
   alias Credo.CLI.Filter
-  alias Credo.CLI.Output
   alias Credo.Sources
   alias Codeclimate.Formatter
 
@@ -21,14 +20,12 @@ defmodule Codeclimate.Command do
   end
 
   defp load_and_validate_source_files(exec) do
-    {time_load, {valid_source_files, invalid_source_files}} =
+    {time_load, {valid_source_files, _invalid_source_files}} =
       :timer.tc fn ->
         exec
         |> Sources.find
         |> Credo.Backports.Enum.split_with(&(&1.valid?))
       end
-
-    Output.complain_about_invalid_source_files(invalid_source_files)
 
     exec
     |> Execution.put_source_files(valid_source_files)

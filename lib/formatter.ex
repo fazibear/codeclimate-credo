@@ -14,7 +14,6 @@ defmodule Codeclimate.Formatter do
 
   @doc "Called after the analysis has run."
   def print_after_info(_source_files, exec, time_load, time_run) do
-
     exec
     |> Execution.get_issues()
     |> Filter.important(exec)
