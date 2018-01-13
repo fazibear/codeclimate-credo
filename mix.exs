@@ -1,7 +1,7 @@
 defmodule CodeclimateCredo.Mixfile do
   use Mix.Project
 
-  def version, do: "0.8.8"
+  def version, do: "0.8.10"
 
   def project do
     [

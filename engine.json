@@ -6,6 +6,6 @@
     "email": "fazibear@gmail.com"
   },
   "languages" : ["Elixir"],
-  "version": "0.8.8",
+  "version": "0.8.10",
   "spec_version": "0.0.1"
 }
