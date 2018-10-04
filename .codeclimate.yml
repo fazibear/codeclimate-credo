@@ -1,5 +1,3 @@
 engines:
-  credo:
-    enabled: true
-  dogma:
+  credo1:
     enabled: true
