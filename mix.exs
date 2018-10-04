@@ -1,6 +1,8 @@
 defmodule CodeClimate.MixProject do
   use Mix.Project
 
+  def version, do: "0.8.10"
+
   def project do
     [
       app: :code_climate,
