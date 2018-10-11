@@ -1,33 +1,33 @@
-defmodule CodeclimateCredo.Mixfile do
+defmodule CodeClimate.MixProject do
   use Mix.Project
 
   def version, do: "0.8.10"
 
   def project do
     [
-      app: :codeclimate_credo,
-      version: version(),
-      elixir: "~> 1.5",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      app: :code_climate,
+      version: "0.1.0",
+      elixir: "~> 1.7",
+      start_permanent: Mix.env() == :prod,
+      build_embedded: Mix.env() == :prod,
       deps: deps(),
       escript: [
-        main_module: Codeclimate.CLI,
-        path: "bin/codeclimate_credo"
+        main_module: CodeClimate
       ]
     ]
   end
 
+  # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      applications: []
+      extra_applications: [:logger]
     ]
   end
 
+  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, version()},
-      {:poison, "~> 3.0"}
+      {:jason, "~> 1.1"}
     ]
   end
 end
