@@ -1,4 +1,4 @@
 defmodule CodeclimateTest do
   use ExUnit.Case
-  doctest Codeclimate
+  doctest CodeClimate
 end
