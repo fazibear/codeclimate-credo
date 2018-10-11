@@ -29,8 +29,8 @@ RUN cd bunt && MIX_ENV=prod mix deps.get --force
 RUN cd bunt && MIX_ENV=prod mix archive.build --force
 RUN cd bunt && MIX_ENV=prod mix archive.install --force
 
-RUN git clone https://github.com/rrrene/credo
-RUN cd credo && git checkout tags/v0.10.2
+RUN git clone https://github.com/fazibear/credo
+RUN cd credo && git checkout codeclimate
 RUN cd credo && MIX_ENV=prod mix deps.get --force
 RUN cd credo && MIX_ENV=prod mix archive.build --force
 RUN cd credo && MIX_ENV=prod mix archive.install --force
@@ -42,4 +42,4 @@ RUN cd codeclimate && MIX_ENV=prod mix archive.install --force
 VOLUME /code
 #WORKDIR /code
 
-CMD ls /code && mix code_climate /code
+CMD mix code_climate /code
