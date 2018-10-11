@@ -61,8 +61,8 @@ defmodule CodeClimate do
   defp process_ignore(opts, %{"ignore" => ignore}), do: opts ++ ["--ignore=#{ignore}"]
   defp process_ignore(opts, _), do: opts
 
-  defp debug(input) do
-    IO.puts(:stderr, inspect(input))
-    input
-  end
+  # defp debug(input) do
+  #   IO.puts(:stderr, inspect(input))
+  #   input
+  # end
 end
