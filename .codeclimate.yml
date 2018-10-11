@@ -1,3 +1,11 @@
 engines:
+  duplication:
+    enabled: false
+  structure:
+    enabled: false
   credo1:
     enabled: true
+    strict: true
+    all: true
+    #only: "warning"
+    #ignore: "readability"
