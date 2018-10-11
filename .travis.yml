@@ -8,5 +8,5 @@ otp_release:
 services:
   - docker
 script:
-  - MIX_ENV=test mix test
+  - MIX_ENV=test mix test --warnings-as-errors
   - docker build -t codeclimate/codeclimate-credo .
