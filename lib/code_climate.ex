@@ -12,9 +12,6 @@ defmodule CodeClimate do
 
     opts = @default_opts ++ build_options_from_config(config, path) ++ [path]
 
-    debug(opts)
-
-
     {out, _exit} = System.cmd(@cmd, opts, stderr_to_stdout: false)
 
     IO.puts(out)
